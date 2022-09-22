@@ -968,7 +968,8 @@ class GitHubHelper {
             const headBranchFull = `${headRepository}:${inputs.branch}`;
             // Try to create the pull request
             try {
-                core.info(`Attempting creation of pull request`);
+                const options = JSON.stringify(Object.assign(Object.assign({}, this.parseRepository(baseRepository)), { title: inputs.title, head: headBranch, base: inputs.base, body: inputs.body, draft: inputs.draft }), undefined, 2);
+                core.info(`Attempting creation of pull request ${options}`);
                 const { data: pull } = yield this.octokit.rest.pulls.create(Object.assign(Object.assign({}, this.parseRepository(baseRepository)), { title: inputs.title, head: headBranch, base: inputs.base, body: inputs.body, draft: inputs.draft }));
                 core.info(`Created pull request #${pull.number} (${headBranch} => ${inputs.base})`);
                 return {
@@ -1230,7 +1231,7 @@ function getRemoteDetail(remoteUrl) {
     if (!githubServerMatch) {
         throw new Error('Could not parse GitHub Server name');
     }
-    const httpsUrlPattern = new RegExp('^https?://.*@?' + githubServerMatch[1] + '/(.+/.+?)(.git)?$', 'i');
+    const httpsUrlPattern = new RegExp('^https?://.*@?' + githubServerMatch[1] + '/(.+/.+?)(\\.git)?$', 'i');
     const sshUrlPattern = new RegExp('^git@' + githubServerMatch[1] + ':(.+/.+).git$', 'i');
     const httpsMatch = remoteUrl.match(httpsUrlPattern);
     if (httpsMatch) {

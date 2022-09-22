@@ -48,7 +48,15 @@ export class GitHubHelper {
 
     // Try to create the pull request
     try {
-      core.info(`Attempting creation of pull request`)
+      const options = JSON.stringify({
+        ...this.parseRepository(baseRepository),
+        title: inputs.title,
+        head: headBranch,
+        base: inputs.base,
+        body: inputs.body,
+        draft: inputs.draft
+      }, undefined, 2);
+      core.info(`Attempting creation of pull request ${options}`)
       const {data: pull} = await this.octokit.rest.pulls.create({
         ...this.parseRepository(baseRepository),
         title: inputs.title,
